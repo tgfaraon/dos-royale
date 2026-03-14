@@ -140,16 +140,19 @@ Upcoming
 A full multiplayer round with host‑authoritative state, CPU opponents, and real‑time turn sync.
 
 <div align="center">
-  <img src="screenshots/gameplay-1.png" width="600" />
+  <img src="privatematch1.png" width="600" />
 </div>
 
+<div align="center">
+  <img src="gameover.png" width="600" />
+</div>
 ---
 
 ### Theme System — Modern Vegas
 Each theme dynamically updates table felt, accent colors, glow effects, and modal styling.
 
 <div align="center">
-  <img src="screenshots/theme-vegas.png" width="600" />
+  <img src="themedemo.mp4" width="600" />
 </div>
 
 ---
@@ -158,7 +161,7 @@ Each theme dynamically updates table felt, accent colors, glow effects, and moda
 Portrait‑optimized UI with responsive seat placement and smooth scaling across devices.
 
 <div align="center">
-  <img src="screenshots/mobile-layout.png" width="350" />
+  <img src="mobile-layout.png" width="350" />
 </div>
 
 ## Author
