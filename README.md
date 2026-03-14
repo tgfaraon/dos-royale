@@ -140,19 +140,11 @@ Upcoming
 A full multiplayer round with host‑authoritative state, CPU opponents, and real‑time turn sync.
 
 <div align="center">
-<<<<<<< HEAD
   <img src="screenshots/privatematch1.png" width="350" />
 </div>
 
 <div align="center">
   <img src="screenshots/gameover.png" width="350" />
-=======
-  <img src="screenshots/privatematch1.png" width="600" />
-</div>
-
-<div align="center">
-  <img src="screenshots/gameover.png" width="600" />
->>>>>>> 37089e49436de0064510fd957a41b33f6d92b727
 </div>
 
 ---
@@ -161,11 +153,7 @@ A full multiplayer round with host‑authoritative state, CPU opponents, and rea
 Each theme dynamically updates table felt, accent colors, glow effects, and modal styling.
 
 <div align="center">
-<<<<<<< HEAD
   <img src="screenshots/themedemo.gif" width="350" />
-=======
-  <img src="screenshots/themedemo.gif" width="600" />
->>>>>>> 37089e49436de0064510fd957a41b33f6d92b727
 </div>
 
 ---
@@ -182,17 +170,9 @@ Portrait‑optimized UI with responsive seat placement and smooth scaling across
 A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, and round transitions.
 
 <div align="center">
-<<<<<<< HEAD
   <img src="screenshots/gameplay-demo.gif" width="350" />
-=======
-  <img src="screenshots/gameplay-demo.gif" width="600" />
->>>>>>> 37089e49436de0064510fd957a41b33f6d92b727
 </div>
 
 ## Author
 Tyler Faraon  
-<<<<<<< HEAD
 Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
-=======
-Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
->>>>>>> 37089e49436de0064510fd957a41b33f6d92b727
