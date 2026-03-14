@@ -1,73 +1,178 @@
-# React + TypeScript + Vite
+# Dos ♦ Royale
+A modern, casino‑inspired reimagining of the classic card game — built with React, TypeScript, Zustand, and a custom game engine.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+Dos Royale is a fast‑paced, strategic card game designed to capture the feel of real‑world play styles — from high‑roller casino tables to casual home gatherings. It blends a handcrafted game engine with a responsive, mobile‑first interface and a theme‑driven visual design system.
 
-Currently, two official plugins are available:
+This repository serves as both a portfolio centerpiece and a fully playable multiplayer experience, showcasing front‑end engineering depth, state‑management discipline, and polished UI/UX execution.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Key Features
+### Custom Game Engine
+Turn sequencing and authoritative state management
 
-## React Compiler
+Combo detection and comparison logic
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+CPU opponents with multiple difficulty levels
 
-## Expanding the ESLint configuration
+Realistic timing and decision behavior
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Written entirely in TypeScript — no external logic libraries
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Dynamic Theme System
+Inspired by real casino environments:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Modern Vegas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Atlantic City
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+High Roller Suite
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Home Game / Party Table
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Themes influence:
+
+Table felt
+
+Accent colors
+
+Glow effects
+
+Modal styling
+
+Button palette
+
+### CPU Opponents
+Easy / Normal / Hard difficulty
+
+Thinking indicators
+
+Human‑like timing and decision patterns
+
+### Mobile‑First UI
+Portrait‑optimized layout
+
+Responsive seat placement
+
+Smooth scaling across devices
+
+Touch‑friendly interactions
+
+### Multiplayer (Private Matches)
+Host‑authoritative game flow
+
+Real‑time sync via Firebase
+
+Lobby system with ready states
+
+Invite links for quick access
+
+Turn updates, round transitions, and game‑over events
+
+### Sound & Feedback
+Card slap, pass, and combo audio cues
+
+Theme‑aware sound design
+
+Optional background music
+
+## Tech Stack
+React + TypeScript
+
+Zustand for state management
+
+Vite for build tooling
+
+TailwindCSS for styling
+
+Firebase Realtime Database for multiplayer sync
+
+Custom game engine (no external logic libraries)
+
+## Project Goals
+Dos Royale is designed to demonstrate:
+
+Front‑end engineering depth
+
+UI/UX polish and responsive design
+
+State‑management discipline
+
+Real‑time multiplayer architecture
+
+Product thinking and iterative refinement
+
+Clean, readable, extensible code
+
+It serves as a showcase of both technical skill and creative execution.
+
+## Roadmap
+Core Gameplay
+[x] Game engine
+
+[x] Turn sequencing
+
+[x] Combo logic
+
+[x] CPU logic v1
+
+[x] Theme system
+
+[x] Multiplayer (private matches)
+
+[x] Sound design
+
+Upcoming
+[ ] Leaderboards & player stats
+
+[ ] OAuth providers (Google, Apple, Discord)
+
+[ ] Custom usernames with availability checks
+
+[ ] Animations & transitions
+
+[ ] Public matchmaking
+
+[ ] CPU logic v2 (bluffing, risk profiles)
+
+## Screenshots
+
+### Gameplay — Private Match
+A full multiplayer round with host‑authoritative state, CPU opponents, and real‑time turn sync.
+
+<div align="center">
+  <img src="screenshots/privatematch1.png" width="600" />
+</div>
+
+<div align="center">
+  <img src="screenshots/gameover.png" width="600" />
+</div>
+
+---
+
+### Theme System — Modern Vegas
+Each theme dynamically updates table felt, accent colors, glow effects, and modal styling.
+
+<div align="center">
+  <img src="screenshots/themedemo.gif" width="600" />
+</div>
+
+---
+
+### Mobile‑First Layout
+Portrait‑optimized UI with responsive seat placement and smooth scaling across devices.
+
+<div align="center">
+  <img src="screenshots/mobile-layout.png" width="350" />
+</div>
+
+## Gameplay Preview
+
+A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, and round transitions.
+
+<div align="center">
+  <img src="screenshots/gameplay-demo.gif" width="600" />
+</div>
+
+## Author
+Tyler Faraon  
+Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
