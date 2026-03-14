@@ -146,6 +146,7 @@ A full multiplayer round with host‑authoritative state, CPU opponents, and rea
 <div align="center">
   <img src="gameover.png" width="600" />
 </div>
+
 ---
 
 ### Theme System — Modern Vegas
