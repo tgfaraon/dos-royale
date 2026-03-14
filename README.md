@@ -164,6 +164,14 @@ Portrait‑optimized UI with responsive seat placement and smooth scaling across
   <img src="mobile-layout.png" width="350" />
 </div>
 
+## Gameplay Preview
+
+A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, and round transitions.
+
+<div align="center">
+  <img src="gameplay-demo.mp4" width="600" />
+</div>
+
 ## Author
 Tyler Faraon  
 Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
