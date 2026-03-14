@@ -173,6 +173,62 @@ A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, a
   <img src="screenshots/gameplay-demo.gif" width="350" />
 </div>
 
+## Architecture Overview
+
+                       ┌──────────────────────────┐
+                       │        React UI          │
+                       │  Components / Screens    │
+                       └─────────────┬────────────┘
+                                     │
+                                     ▼
+                       ┌──────────────────────────┐
+                       │       Zustand Store       │
+                       │ gameStore / uiStore /     │
+                       │ themeStore / audioStore   │
+                       └─────────────┬────────────┘
+                                     │
+                                     ▼
+                       ┌──────────────────────────┐
+                       │       Game Engine         │
+                       │ turnManager / combos /    │
+                       │ CPU logic / validation    │
+                       └─────────────┬────────────┘
+                                     │
+                                     ▼
+                       ┌──────────────────────────┐
+                       │ Firebase Realtime DB      │
+                       │ lobby channel / sync      │
+                       │ host-authoritative flow   │
+                       └──────────────────────────┘
+
+## How to run locally
+### 1. Clone the repository
+bash
+git clone https://github.com/tgfaraon/dos-royale.git
+cd dos-royale
+### 2. Install dependencies
+bash
+npm install
+### 3. Add environment variables
+#### Code
+VITE_FIREBASE_API_KEY=AIzaSyAM9FglTrUOnOau-YJUcwW--ERDObCyBxE
+VITE_FIREBASE_AUTH_DOMAIN=dos-royale-aa48a.firebaseapp.com
+VITE_FIREBASE_DB_URL=https://dos-royale-aa48a-default-rtdb.firebaseio.com
+VITE_FIREBASE_PROJECT_ID=dos-royale-aa48a
+VITE_FIREBASE_STORAGE_BUCKET=dos-royale-aa48a.firebasestorage.app
+VITE_FIREBASE_SENDER_ID=159731918017
+VITE_FIREBASE_APP_ID=1:159731918017:web:3a12d66aa5f27d0a9ba040
+
+### 4. Start the development server
+bash
+npm run dev
+The application will be available at:
+
+### Code
+http://localhost:5173
+
+---
+
 ## Author
-Tyler Faraon  
+### Tyler Faraon  
 Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
