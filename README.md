@@ -223,10 +223,11 @@ VITE_FIREBASE_APP_ID=1:159731918017:web:3a12d66aa5f27d0a9ba040
 
 ### 4. Start the development server
 bash
-npm run dev
-The application will be available at:
 
-### Code
+npm run dev
+
+The application will be available at:
+#### Code
 http://localhost:5173
 
 ---
