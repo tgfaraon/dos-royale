@@ -204,7 +204,9 @@ A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, a
 ## How to run locally
 ### 1. Clone the repository
 bash
+
 git clone https://github.com/tgfaraon/dos-royale.git
+
 cd dos-royale
 ### 2. Install dependencies
 bash
