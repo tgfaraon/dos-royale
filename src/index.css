@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+:root {
+    --theme-bg: #0b3d91;
+    --theme-accent: #e63946;
+    --theme-surface: #1a1a1a;
+    --theme-text: #ffffff;
+}
