@@ -1,5 +1,5 @@
 # Dos ♦ Royale
-A modern, casino‑inspired reimagining of the classic card game Pusoy Dos — built with React, TypeScript, Zustand, and a custom game engine.
+A modern, casino‑inspired reimagining of the classic Filipino card game Pusoy Dos — built with React, TypeScript, Zustand, and a custom game engine.
 
 ## Overview
 Dos Royale is a fast‑paced, strategic card game designed to capture the feel of real‑world play styles — from high‑roller casino tables to casual home gatherings. It blends a handcrafted game engine with a responsive, mobile‑first interface and a theme‑driven visual design system.
