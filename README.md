@@ -2,21 +2,24 @@
 A modern, casino‑inspired reimagining of the classic card game — built with React, TypeScript, Zustand, and a custom game engine.
 
 ## Overview
-Dos Royale is a fast‑paced, strategic card game designed to capture the feel of real‑world play styles, from high‑roller casino tables to casual home gatherings. The project blends a handcrafted game engine with a responsive, mobile‑first interface and a theme‑driven visual design system.
+Dos Royale is a fast‑paced, strategic card game designed to capture the feel of real‑world play styles — from high‑roller casino tables to casual home gatherings. It blends a handcrafted game engine with a responsive, mobile‑first interface and a theme‑driven visual design system.
 
-This repository is intended as both a portfolio centerpiece and a fully playable digital experience.
+This repository serves as both a portfolio centerpiece and a fully playable multiplayer experience, showcasing front‑end engineering depth, state‑management discipline, and polished UI/UX execution.
 
-## Key Features (in progress)
-
+## Key Features
 ### Custom Game Engine
-Turn sequencing, combo evaluation, and CPU decision‑making
+Turn sequencing and authoritative state management
 
-Written entirely in TypeScript
+Combo detection and comparison logic
 
-Designed for clarity, extensibility, and performance
+CPU opponents with multiple difficulty levels
+
+Realistic timing and decision behavior
+
+Written entirely in TypeScript — no external logic libraries
 
 ### Dynamic Theme System
-Inspired by real casino environments, including:
+Inspired by real casino environments:
 
 Modern Vegas
 
@@ -39,11 +42,11 @@ Modal styling
 Button palette
 
 ### CPU Opponents
-Multiple difficulty levels
+Easy / Normal / Hard difficulty
 
 Thinking indicators
 
-Realistic timing and decision behavior
+Human‑like timing and decision patterns
 
 ### Mobile‑First UI
 Portrait‑optimized layout
@@ -52,19 +55,25 @@ Responsive seat placement
 
 Smooth scaling across devices
 
-## Current Status
-The project is actively in development.
-Core systems are being built with a focus on:
+Touch‑friendly interactions
 
-Clean architecture
+### Multiplayer (Private Matches)
+Host‑authoritative game flow
 
-Readable state management
+Real‑time sync via Firebase
 
-Polished user experience
+Lobby system with ready states
 
-Authentic casino presentation
+Invite links for quick access
 
-This repository will evolve rapidly as features are implemented.
+Turn updates, round transitions, and game‑over events
+
+### Sound & Feedback
+Card slap, pass, and combo audio cues
+
+Theme‑aware sound design
+
+Optional background music
 
 ## Tech Stack
 React + TypeScript
@@ -75,6 +84,8 @@ Vite for build tooling
 
 TailwindCSS for styling
 
+Firebase Realtime Database for multiplayer sync
+
 Custom game engine (no external logic libraries)
 
 ## Project Goals
@@ -82,30 +93,46 @@ Dos Royale is designed to demonstrate:
 
 Front‑end engineering depth
 
-UI/UX polish
+UI/UX polish and responsive design
 
-State management discipline
+State‑management discipline
 
-Game logic architecture
+Real‑time multiplayer architecture
 
-Product thinking
+Product thinking and iterative refinement
 
-Iterative design and refinement
+Clean, readable, extensible code
 
 It serves as a showcase of both technical skill and creative execution.
 
 ## Roadmap
-[ ] Core game loop
+Core Gameplay
+[x] Game engine
 
-[ ] CPU logic v1
+[x] Turn sequencing
 
-[ ] Theme system
+[x] Combo logic
 
-[ ] Animations
+[x] CPU logic v1
 
-[ ] Multiplayer (stretch goal)
+[x] Theme system
 
-[ ] Sound design (stretch goal)
+[x] Multiplayer (private matches)
+
+[x] Sound design
+
+Upcoming
+[ ] Leaderboards & player stats
+
+[ ] OAuth providers (Google, Apple, Discord)
+
+[ ] Custom usernames with availability checks
+
+[ ] Animations & transitions
+
+[ ] Public matchmaking
+
+[ ] CPU logic v2 (bluffing, risk profiles)
 
 ## Author
 Tyler Faraon  
