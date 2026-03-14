@@ -134,6 +134,33 @@ Upcoming
 
 [ ] CPU logic v2 (bluffing, risk profiles)
 
+## Screenshots
+
+### Gameplay — Private Match
+A full multiplayer round with host‑authoritative state, CPU opponents, and real‑time turn sync.
+
+<div align="center">
+  <img src="screenshots/gameplay-1.png" width="600" />
+</div>
+
+---
+
+### Theme System — Modern Vegas
+Each theme dynamically updates table felt, accent colors, glow effects, and modal styling.
+
+<div align="center">
+  <img src="screenshots/theme-vegas.png" width="600" />
+</div>
+
+---
+
+### Mobile‑First Layout
+Portrait‑optimized UI with responsive seat placement and smooth scaling across devices.
+
+<div align="center">
+  <img src="screenshots/mobile-layout.png" width="350" />
+</div>
+
 ## Author
 Tyler Faraon  
 Curriculum architect, product owner, and full‑stack engineer focused on building polished, intentional digital experiences.
