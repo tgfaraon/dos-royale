@@ -140,11 +140,11 @@ Upcoming
 A full multiplayer round with host‑authoritative state, CPU opponents, and real‑time turn sync.
 
 <div align="center">
-  <img src="privatematch1.png" width="600" />
+  <img src="screenshots/privatematch1.png" width="600" />
 </div>
 
 <div align="center">
-  <img src="gameover.png" width="600" />
+  <img src="screenshots/gameover.png" width="600" />
 </div>
 
 ---
@@ -153,7 +153,7 @@ A full multiplayer round with host‑authoritative state, CPU opponents, and rea
 Each theme dynamically updates table felt, accent colors, glow effects, and modal styling.
 
 <div align="center">
-  <img src="themedemo.mp4" width="600" />
+  <img src="screenshots/themedemo.mp4" width="600" />
 </div>
 
 ---
@@ -162,7 +162,7 @@ Each theme dynamically updates table felt, accent colors, glow effects, and moda
 Portrait‑optimized UI with responsive seat placement and smooth scaling across devices.
 
 <div align="center">
-  <img src="mobile-layout.png" width="350" />
+  <img src="screenshots/mobile-layout.png" width="350" />
 </div>
 
 ## Gameplay Preview
@@ -170,7 +170,7 @@ Portrait‑optimized UI with responsive seat placement and smooth scaling across
 A quick look at a full turn cycle — dealing, selecting cards, CPU decisions, and round transitions.
 
 <div align="center">
-  <img src="gameplay-demo.mp4" width="600" />
+  <img src="screenshots/gameplay-demo.mp4" width="600" />
 </div>
 
 ## Author
