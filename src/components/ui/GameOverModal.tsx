@@ -1,12 +1,38 @@
+import type { PlayerInfo } from "../../stores/singleplayerGameStore";
+
 interface GameOverModalProps {
     winner: number | null;
+    players: PlayerInfo[];
+    localPlayerId: string | null;
     onPlayAgain: () => void;
     onLeaveLobby?: () => void;
     isMultiplayer?: boolean;
 }
 
-export function GameOverModal({ winner, onPlayAgain, onLeaveLobby, isMultiplayer }: GameOverModalProps) {
+export function GameOverModal({
+    winner,
+    players,
+    localPlayerId,
+    onPlayAgain,
+    onLeaveLobby,
+    isMultiplayer
+}: GameOverModalProps) {
+
     if (winner === null) return null;
+
+    const winnerPlayer = players[winner];
+
+    let winnerName = "Player";
+
+    if (winnerPlayer) {
+        if (winnerPlayer.id === localPlayerId) {
+            winnerName = "You";
+        } else if (winnerPlayer.id.startsWith("cpu-")) {
+            winnerName = `CPU ${winner}`;
+        } else {
+            winnerName = winnerPlayer.username || `Player ${winner}`;
+        }
+    }
 
     return (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -31,10 +57,10 @@ export function GameOverModal({ winner, onPlayAgain, onLeaveLobby, isMultiplayer
                 </h2>
 
                 <p className="mb-6 text-lg text-[var(--theme-text)]">
-                    Player {winner} wins!
+                    {winnerName} wins!
                 </p>
 
-                {/* --- Play Again --- */}
+                {/* Play Again */}
                 <button
                     onClick={onPlayAgain}
                     className="
@@ -54,7 +80,7 @@ export function GameOverModal({ winner, onPlayAgain, onLeaveLobby, isMultiplayer
                     Play Again
                 </button>
 
-                {/* --- Leave Lobby (multiplayer only) --- */}
+                {/* Leave Lobby (multiplayer only) */}
                 {isMultiplayer && onLeaveLobby && (
                     <button
                         onClick={onLeaveLobby}

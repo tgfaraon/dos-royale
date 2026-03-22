@@ -4,7 +4,6 @@ import { sortHand } from "../state/deck";
 
 // ---------- Utility Helpers ----------
 
-// Suit strength for tie‑breaking (♣ < ♦ < ♥ < ♠) 
 const suitStrength = {
     [Suit.Clubs]: 1,
     [Suit.Spades]: 2,

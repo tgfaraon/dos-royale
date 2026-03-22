@@ -1,5 +1,5 @@
 import React from "react";
-import { useGameStore } from "../../stores/gameStore";
+import { useGameStore } from "../../stores/singleplayerGameStore";
 
 export function CpuSelector() {
     const cpuCount = useGameStore((s) => s.cpuCount);

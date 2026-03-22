@@ -33,6 +33,26 @@ export function shuffleDeck(deck: Card[]): Card[] {
     } return shuffled;
 }
 
+export function shuffleDeckWithSeed(deck: Card[], seed: string): Card[] {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) {
+        h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+    }
+
+    const rand = () => {
+        h = Math.imul(48271, h) % 2147483647;
+        return (h & 2147483647) / 2147483647;
+    };
+
+    const arr = [...deck];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+
+    return arr;
+}
+
 // Deal 4 hands of 13 cards each 
 export function dealHands(deck: Card[], totalPlayers: number): Card[][] {
     const hands: Card[][] = Array.from({ length: totalPlayers }, () => []);

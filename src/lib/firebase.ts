@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -12,4 +14,31 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const db = getDatabase(app);
+export const firestore = getFirestore(app);
+export const auth = getAuth(app);
+
+// Create a promise that resolves when auth is ready
+export const authReady = new Promise((resolve) => {
+    // If already signed in (rare but possible), resolve immediately
+    if (auth.currentUser) {
+        console.log("[AUTH] Already signed in:", auth.currentUser.uid);
+        resolve(true);
+        return;
+    }
+
+    // Otherwise wait for the first auth state
+    const unsub = onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("[AUTH] Ready:", user.uid);
+            resolve(true);
+            unsub(); // stop listening
+        }
+    });
+});
+
+// Start sign-in
+signInAnonymously(auth).catch(err => {
+    console.error("[AUTH ERROR]", err);
+});

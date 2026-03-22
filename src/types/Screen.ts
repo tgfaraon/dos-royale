@@ -10,5 +10,6 @@ export type Screen =
     | "privateLobby"
     | "publicQueue"
     | "game"
+    | "leaderboard"
     | "login"
     | "lobbyFull";

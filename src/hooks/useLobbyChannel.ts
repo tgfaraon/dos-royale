@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ref, onChildAdded, push, off, type DataSnapshot } from "firebase/database";
 import { db } from "../lib/firebase";
-import type { AuthoritativeGameState } from "../stores/gameStore";
+
+import type { MultiplayerState, PlayerInfo } from "../stores/multiplayerGameStore";
 import type { ThemeName } from "../stores/themeStore";
 import type { Card as CardType } from "../game-engine/types";
 
@@ -10,13 +11,23 @@ export type LobbyEvent =
     | { type: "player-leave"; leavingPlayerId: string }
     | { type: "player-ready"; playerId: string; ready: boolean }
     | { type: "settings-update"; cpuCount: number; cpuDifficulty: "easy" | "normal" | "hard"; theme: ThemeName; turnTimer: number | null }
-    | { type: "game-init"; state: AuthoritativeGameState }
-    | { type: "lobby-sync"; state: AuthoritativeGameState }
-    | { type: "turn-update"; state: AuthoritativeGameState }
-    | { type: "round-end"; state: AuthoritativeGameState }
-    | { type: "game-over"; state: AuthoritativeGameState }
-    | { type: "play-request"; playerId: string; cards: CardType[] }
-    | { type: "pass-request"; playerId: string };
+    | { type: "game-init"; state: MultiplayerState }
+    | {
+        type: "game-init-lite";
+        payload: {
+            players: PlayerInfo[];
+            cpuCount: number;
+            cpuDifficulty: "easy" | "normal" | "hard";
+            turnTimer: number | null;
+            seed: string;
+        };
+    }
+    | { type: "lobby-sync"; state: MultiplayerState }
+    | { type: "turn-update"; state: MultiplayerState }
+    | { type: "round-end"; state: MultiplayerState }
+    | { type: "game-over"; state: MultiplayerState }
+    | { type: "play-request"; playerId: string; cardIds: string[]; cards?: CardType[]; }
+    | { type: "pass-request"; playerId: string }
 
 export function useLobbyChannel(
     lobbyId: string | null,
@@ -39,31 +50,43 @@ export function useLobbyChannel(
                 const event = snapshot.val();
                 if (!event) return;
 
-                setReady(true);
                 eventHandlerRef.current(event as LobbyEvent);
             };
         }
-    }, []); // initialize once
-
-    const unsubscribeRef = useRef<(() => void) | null>(null);
+    }, []);
 
     useEffect(() => {
         if (!lobbyId) return;
 
         const eventsRef = ref(db, `lobbies/${lobbyId}/events`);
-        const stableCallback = stableCallbackRef.current!;
+
+        let isInitialBatch = true;
+
+        const wrappedCallback = (snapshot: DataSnapshot) => {
+            const event = snapshot.val();
+            if (!event) return;
+
+            if (isInitialBatch) {
+                return;
+            }
+
+            // Only process NEW events
+            eventHandlerRef.current(event as LobbyEvent);
+        };
 
         // Subscribe
-        onChildAdded(eventsRef, stableCallback);
+        onChildAdded(eventsRef, wrappedCallback);
 
-        // Store unsubscribe
-        unsubscribeRef.current = () => {
-            off(eventsRef, "child_added", stableCallback);
-        };
+        // After Firebase finishes replaying existing events,
+        // flip the flag on the next microtask.
+        queueMicrotask(() => {
+            isInitialBatch = false;
+            setReady(true);
+        });
 
         // Cleanup
         return () => {
-            off(eventsRef, "child_added", stableCallback);
+            off(eventsRef, "child_added", wrappedCallback);
         };
     }, [lobbyId]);
 
@@ -75,9 +98,5 @@ export function useLobbyChannel(
         push(eventsRef, clean);
     }
 
-    function unsubscribe() {
-        unsubscribeRef.current?.();
-    }
-
-    return { send, ready, unsubscribe };
-}    
+    return { send, ready };
+}

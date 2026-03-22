@@ -1,4 +1,4 @@
-import type { PlayerInfo } from "../stores/gameStore";
+import type { PlayerInfo } from "../stores/singleplayerGameStore";
 import type { Card } from "./types"; // adjust path if needed
 
 // Find where the local user sits in the engine array
@@ -33,11 +33,14 @@ export function getSeating(
     userId: string | null,
     currentPlayerIndex: number
 ) {
+    // 1. Find the engine index of the local user
     const localPlayerIndex = getLocalPlayerIndex(players, userId);
 
-    const rotatedPlayers = getRotated(players, localPlayerIndex);
-    const rotatedHands = getRotated(hands, localPlayerIndex);
+    // 2. Rotate ONLY for UI display
+    const uiPlayers = getRotated(players, localPlayerIndex);
+    const uiHands = getRotated(hands, localPlayerIndex);
 
+    // 3. Compute which UI seat is currently active
     const activeSeatIndex = getActiveSeatIndex(
         currentPlayerIndex,
         localPlayerIndex,
@@ -45,10 +48,17 @@ export function getSeating(
     );
 
     return {
+        // ENGINE INDEX — do NOT rotate
         localPlayerIndex,
-        rotatedPlayers,
-        rotatedHands,
+
+        // UI ONLY — safe to rotate
+        rotatedPlayers: uiPlayers,
+        rotatedHands: uiHands,
+
+        // UI seat index of the active player
         activeSeatIndex,
-        playerHand: rotatedHands[0] ?? [],
+
+        // Local player's hand (always seat 0 in UI)
+        playerHand: uiHands[0] ?? [],
     };
 }

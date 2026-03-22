@@ -1,14 +1,18 @@
 import React from "react";
 import { useThemeStore } from "../../stores/themeStore";
 import { useAudioStore } from "../../stores/audioStore";
-import { useGameStore } from "../../stores/gameStore";
+import { useSingleplayerStore } from "../../stores/singleplayerGameStore";
 import type { ThemeName } from "../../stores/themeStore";
 
 export default function SettingsMenu({ onBack }: { onBack: () => void }) {
     const { theme, setTheme } = useThemeStore();
 
-    const { cpuCount, setCpuCount, cpuDifficulty, setCpuDifficulty, } =
-        useGameStore();
+    const {
+        cpuCount,
+        setCpuCount,
+        cpuDifficulty,
+        setCpuDifficulty,
+    } = useSingleplayerStore();
 
     const {
         bgmMuted,

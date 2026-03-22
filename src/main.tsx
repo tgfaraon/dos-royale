@@ -2,9 +2,12 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { ref, get } from "firebase/database";
+import "./lib/firebase";
 
-import { useUserStore } from "./stores/userStore";
-import { useGameStore } from "./stores/gameStore";
+import { useUserStore } from "./stores/userStore.ts";
+import { useSingleplayerStore } from "./stores/singleplayerGameStore";
+import { useMultiplayerStore } from "./stores/multiplayerGameStore";
 import { useThemeStore } from "./stores/themeStore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -12,11 +15,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 function Root() {
   const setUser = useUserStore((s) => s.setUser);
 
-  // Firebase Auth listener — hydrate Zustand when user logs in
   useEffect(() => {
     const auth = getAuth();
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         console.log("No Firebase user — showing login modal.");
         return;
@@ -24,9 +26,22 @@ function Root() {
 
       console.log("Firebase user loaded:", user.uid);
 
+      // Load username from Realtime Database
+      const userRef = ref(db, `users/${user.uid}`);
+      const snap = await get(userRef);
+
+      let username = "Player";
+
+      if (snap.exists()) {
+        username = snap.val().username; // ← this is "gaige"
+      } else {
+        // fallback if DB entry missing
+        username = user.displayName || user.email?.split("@")[0] || "Player";
+      }
+
       setUser({
         userId: user.uid,
-        username: user.displayName || user.email?.split("@")[0] || "Player",
+        username,
         avatarUrl: user.photoURL,
         provider: user.providerData[0]?.providerId || "unknown",
       });
@@ -35,7 +50,6 @@ function Root() {
     return () => unsubscribe();
   }, [setUser]);
 
-  // Handle deep link invite URLs
   useEffect(() => {
     function handleDeepLink() {
       const url = window.location.href;
@@ -52,12 +66,13 @@ function Root() {
 }
 
 if (import.meta.env.DEV) {
-  // Expose Zustand stores for debugging
-  // @ts-ignore
+  // @ts-expect-error
   window.useUserStore = useUserStore;
-  // @ts-ignore
-  window.useGameStore = useGameStore;
-  // @ts-ignore
+  // @ts-expect-error
+  window.useSingleplayerStore = useSingleplayerStore;
+  // @ts-expect-error
+  window.useMultiplayerStore = useMultiplayerStore;
+  // @ts-expect-error
   window.useThemeStore = useThemeStore;
 }
 

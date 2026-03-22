@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useThemeStore } from "./stores/themeStore";
-import { useGameStore } from "./stores/gameStore";
+import { useSingleplayerStore } from "./stores/singleplayerGameStore";
+import { useMultiplayerStore } from "./stores/multiplayerGameStore";
 import type { Screen } from "./types/Screen";
 
 // MAIN MENU SYSTEM
@@ -15,71 +16,68 @@ import { audioManager } from "./lib/audioManager";
 import MenuLayout from "./components/layout/MenuLayout";
 import PrivateMatchLobby from "./components/lobby/PrivateMatchLobby";
 import PublicMatchQueue from "./components/lobby/PublicMatchQueue";
+import { LeaderboardPanel } from "./components/ui/LeaderboardPanel";
 
 // LOGIN SYSTEM
 import LoginModal from "./components/mainmenu/LoginModal";
 import { useUserStore } from "./stores/userStore";
 import { useInviteLink } from "./hooks/useInviteLink";
 
+// USERNAME SYSTEM
+import { UsernameModal } from "./components/ui/UsernameModal";
+import { useUIStore } from "./stores/uiStore";
+
 // GAMEPLAY
-import { GameBoard } from "./components/layout/GameBoard";
+import { GameBoard } from "./components/game/GameBoard/GameBoard";
 import LobbyFullScreen from "./components/lobby/LobbyFullScreen";
 
 export default function App() {
+  useUserStore.getState().hydrateUser();
+
   // -----------------------------
   // NAVIGATION STATE
   // -----------------------------
-  const [screen, setScreen] = useState<Screen>(() => {
-    const saved = localStorage.getItem("dosroyale-screen");
-    return (saved as Screen) || "menu";
-  });
+  const screen = useUIStore(s => s.screen);
+  const setScreen = useUIStore(s => s.setScreen);
 
   const { bgmVolume, bgmMuted } = useAudioStore();
 
-  // Save screen whenever it changes
-  useEffect(() => {
-    localStorage.setItem("dosroyale-screen", screen);
-  }, [screen]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const lobby = params.get("lobby");
-
-    if (lobby) {
-      useGameStore.getState().setLobbyId(lobby);
-    }
-  }, []);
-
-  // Adjust volume
+  // -----------------------------
+  // AUDIO
+  // -----------------------------
   useEffect(() => {
     audioManager.setBgmVolume(bgmVolume);
   }, [bgmVolume]);
 
-  // Mute
   useEffect(() => {
     audioManager.setBgmVolume(bgmMuted ? 0 : bgmVolume);
   }, [bgmMuted, bgmVolume]);
 
-  // Safe BGM initialization
   useEffect(() => {
     const id = setTimeout(() => {
       audioManager.playBgm();
     }, 300);
-
     return () => clearTimeout(id);
   }, []);
 
   // -----------------------------
   // LOGIN LOGIC
   // -----------------------------
-  const isLoggedIn = useUserStore((s) => s.isLoggedIn);
-  const provider = useUserStore((s) => s.provider);
+  const isLoggedIn = useUserStore(s => s.isLoggedIn);
+  const username = useUserStore(s => s.username);
+  const provider = useUserStore(s => s.provider);
+  const setShowUsernameModal = useUIStore(s => s.setShowUsernameModal);
+
+  const showUsernameModal =
+    isLoggedIn &&
+    provider !== "guest" &&
+    (!username || username === "Guest");
 
   // -----------------------------
   // THEME LOGIC
   // -----------------------------
-  const theme = useThemeStore((state) => state.theme);
-  const themeVars = useThemeStore((state) => state.themes[state.theme].vars);
+  const theme = useThemeStore(state => state.theme);
+  const themeVars = useThemeStore(state => state.themes[state.theme].vars);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -118,10 +116,12 @@ export default function App() {
   // -----------------------------
   const [mode, setMode] = useState<"single" | "private" | "public" | null>(null);
 
-  // NEW authoritative selectors
-  const cpuCount = useGameStore((s) => s.gameState.cpuCount);
-  const cpuDifficulty = useGameStore((s) => s.gameState.cpuDifficulty);
-  const lobbyId = useGameStore((s) => s.gameState.lobbyId);
+  // Singleplayer state
+  const cpuCount = useSingleplayerStore(s => s.state.cpuCount);
+  const cpuDifficulty = useSingleplayerStore(s => s.state.cpuDifficulty);
+
+  // Multiplayer state
+  const lobbyId = useMultiplayerStore(s => s.state.lobbyId);
 
   function navigate(next: Screen) {
     setScreen(next);
@@ -149,83 +149,76 @@ export default function App() {
     );
   }
 
+  // -----------------------------
+  // USERNAME MODAL (GLOBAL)
+  // -----------------------------
+  const usernameModal = showUsernameModal ? (
+    <UsernameModal onClose={() => setShowUsernameModal(false)} />
+  ) : null;
+
+  // -----------------------------
+  // MAIN RENDER
+  // -----------------------------
   return (
-    <MenuLayout>
-      <div style={themeVars} className="w-full h-full">
-        {!isLoggedIn && <LoginModal />}
+    <>
+      {usernameModal}
 
-        {/* MAIN MENU SYSTEM */}
-        {screen === "menu" && (
-          <MainMenu onNavigate={setScreen} />
-        )}
-
-        {screen === "settings" && (
-          <SettingsMenu onBack={() => setScreen("menu")} />
-        )}
-
-        {screen === "howto" && (
-          <HowToPlay onNavigate={setScreen} />
-        )}
-
-        {screen === "credits" && (
-          <Credits onNavigate={setScreen} />
-        )}
-
-        {screen === "play" && (
-          <PlayMenu onNavigate={setScreen} setMode={setMode} />
-        )}
-
-        {/* GAME MODE SETUP SCREENS */}
-        {screen === "single" && (
-          <SinglePlayerSetup
-            onNavigate={setScreen}
-            onStart={() => {
-              setMode("single");
-
-              useGameStore.getState().singleInitializeGame(
-                useGameStore.getState().gameState.cpuCount,
-                useGameStore.getState().gameState.cpuDifficulty
-              );
-
-              setScreen("game");
-            }}
-          />
-        )}
-
-        {screen === "private" && lobbyId && (
-          <PrivateMatchLobby onNavigate={setScreen} />
-        )}
-
-        {screen === "privateLobby" && (
-          <PrivateMatchLobby onNavigate={setScreen} />
-        )}
-
-
-        {screen === "private" && !lobbyId && (
-          <div className="flex items-center justify-center h-screen text-[var(--theme-text)]">
-            <p>Loading lobby…</p>
+      {screen === "game" ? (
+        <GameBoard
+          mode={mode}
+          cpuCount={cpuCount}
+          cpuDifficulty={cpuDifficulty}
+          onNavigate={(next: Screen) => setScreen(next)}
+          setScreen={setScreen}
+        />
+      ) : screen === "leaderboard" ? (
+        <MenuLayout hideUserBar>
+          <div style={themeVars} className="flex items-center justify-center w-full h-full">
+            <LeaderboardPanel onBack={() => setScreen("play")} />
           </div>
-        )}
+        </MenuLayout>
+      ) : (
+        <MenuLayout>
+          <div style={themeVars} className="w-full h-full">
+            {!isLoggedIn && <LoginModal />}
 
-        {screen === "lobbyFull" && (
-          <LobbyFullScreen onNavigate={setScreen} />
-        )}
+            {screen === "menu" && <MainMenu onNavigate={setScreen} />}
+            {screen === "settings" && <SettingsMenu onBack={() => setScreen("menu")} />}
+            {screen === "howto" && <HowToPlay onNavigate={setScreen} />}
+            {screen === "credits" && <Credits onNavigate={setScreen} />}
+            {screen === "play" && <PlayMenu onNavigate={setScreen} setMode={setMode} />}
 
-        {screen === "public" && (
-          <PublicMatchQueue onNavigate={setScreen} />
-        )}
+            {screen === "single" && (
+              <SinglePlayerSetup
+                onNavigate={setScreen}
+                onStart={(count, difficulty) => {
+                  setMode("single");
+                  useSingleplayerStore.getState().startGame(count, difficulty);
+                  setScreen("game");
+                }}
+              />
+            )}
 
-        {/* ACTUAL GAME */}
-        {screen === "game" && (
-          <GameBoard
-            mode={mode}
-            cpuCount={cpuCount}
-            cpuDifficulty={cpuDifficulty}
-            onNavigate={(next: Screen) => setScreen(next)}
-            setScreen={setScreen}
-          />
-        )}
-      </div>
-    </MenuLayout>
+            {screen === "private" && lobbyId && (
+              <PrivateMatchLobby
+                onNavigate={(next: Screen) => {
+                  if (next === "game") setMode("private");
+                  setScreen(next);
+                }}
+              />
+            )}
+
+            {screen === "private" && !lobbyId && (
+              <div className="flex items-center justify-center h-screen text-[var(--theme-text)]">
+                <p>Loading lobby…</p>
+              </div>
+            )}
+
+            {screen === "lobbyFull" && <LobbyFullScreen onNavigate={setScreen} />}
+            {screen === "public" && <PublicMatchQueue onNavigate={setScreen} />}
+          </div>
+        </MenuLayout>
+      )}
+    </>
   );
 }

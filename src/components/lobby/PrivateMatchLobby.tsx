@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useCallback, useState, useRef } from "react";
-import { useGameStore, MAX_PLAYERS } from "../../stores/gameStore";
+import {
+    useMultiplayerStore,
+    MAX_PLAYERS,
+} from "../../stores/multiplayerGameStore";
+import type { MultiplayerState } from "../../stores/multiplayerGameStore";
 import { useUserStore } from "../../stores/userStore";
 import { useThemeStore } from "../../stores/themeStore";
+import type { ThemeName } from "../../stores/themeStore";
 import { useLobbyChannel, type LobbyEvent } from "../../hooks/useLobbyChannel";
 import { ref, set } from "firebase/database";
 import { db } from "../../lib/firebase";
 import type { Screen } from "../../types/Screen";
+import type { PlayerInfo } from "../../stores/singleplayerGameStore";
 
 interface PrivateMatchLobbyProps {
     onNavigate: (screen: Screen) => void;
@@ -13,18 +19,18 @@ interface PrivateMatchLobbyProps {
 
 export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps) {
     // ---------- Zustand state ----------
-    const hostId = useGameStore(s => s.gameState.hostId);
-    const players = useGameStore(s => s.gameState.players);
-    const lobbyId = useGameStore(s => s.gameState.lobbyId);
-    const cpuCount = useGameStore(s => s.gameState.cpuCount);
-    const cpuDifficulty = useGameStore(s => s.gameState.cpuDifficulty);
-    const turnTimer = useGameStore(s => s.gameState.turnTimer);
+    const hostId = useMultiplayerStore(s => s.state.hostId);
+    const players = useMultiplayerStore(s => s.state.players);
+    const lobbyId = useMultiplayerStore(s => s.state.lobbyId);
+    const cpuCount = useMultiplayerStore(s => s.state.cpuCount);
+    const cpuDifficulty = useMultiplayerStore(s => s.state.cpuDifficulty);
+    const turnTimer = useMultiplayerStore(s => s.state.turnTimer);
 
-    const setPlayers = useGameStore(s => s.setPlayers);
-    const setHostId = useGameStore(s => s.setHostId);
-    const setLobbyId = useGameStore(s => s.setLobbyId);
+    const setPlayers = useMultiplayerStore(s => s.setPlayers);
+    const setHostId = useMultiplayerStore(s => s.setHostId);
+    const setLobbyId = useMultiplayerStore(s => s.setLobbyId);
 
-    const hostInitializeGame = useGameStore(s => s.hostInitializeGame);
+    const hostInitializeGame = useMultiplayerStore(s => s.hostInitializeGame);
 
     const theme = useThemeStore(s => s.theme);
     const setTheme = useThemeStore(s => s.setTheme);
@@ -46,43 +52,80 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
 
     const isHost = hostId === userId;
 
-    console.log("[LOBBY RENDER] players", players);
-    console.log("[LOBBY RENDER] hostId", hostId);
-    console.log("[LOBBY RENDER] lobbyId", lobbyId);
+    // ---------- Realtime channel ID ----------
+    const channelId = lobbyId;
 
-    // ---------- Lobby event handler ----------
+    // ---------- Host match start helper ref ----------
+    const hostStartMatchRef = useRef<(players: PlayerInfo[]) => void>(() => { });
+
+    // ---------- Lobby event handler (MUST come before useLobbyChannel) ----------
     const onLobbyEvent = useCallback(
         (event: LobbyEvent) => {
             console.log("[LOBBY EVENT]", event);
 
-            // Ignore pure game events in the lobby
+            // Ignore mid-game events in lobby
             if (
                 event.type === "turn-update" ||
-                event.type === "round-end" ||
-                event.type === "game-over"
+                event.type === "round-end"
             ) {
                 return;
             }
 
-            // --- GAME INIT: hydrate BOTH host and guest, then navigate ---
-            if (event.type === "game-init") {
-                console.log("[GAME_INIT EVENT STATE", {
-                    players: event.state.players,
-                    winner: event.state.winner,
-                    handsLen: event.state.hands?.length,
-                });
+            // Allow game-over so leaderboard can update
+            if (event.type === "game-over") {
+                if (!isHost) return; // only host updates leaderboard
+            }
 
-                useGameStore.setState(() => ({
-                    gameState: { ...event.state },
+            // Lightweight init
+            if (event.type === "game-init-lite") {
+                const { players, cpuCount, cpuDifficulty, seed } = event.payload;
+
+                useMultiplayerStore.setState(prev => ({
+                    state: {
+                        ...prev.state,
+                        players,
+                        cpuCount,
+                        cpuDifficulty:
+                            cpuDifficulty as MultiplayerState["cpuDifficulty"],
+                    },
+                }));
+
+                useMultiplayerStore.getState().hostInitializeGame(
+                    cpuCount,
+                    cpuDifficulty as MultiplayerState["cpuDifficulty"],
+                    players,
+                    seed
+                );
+
+                onNavigate("game");
+                return;
+            }
+
+            // Full init
+            if (event.type === "game-init") {
+                useMultiplayerStore.setState(() => ({
+                    state: { ...event.state },
                 }));
 
                 onNavigate("game");
                 return;
             }
 
-            // --- All other lobby events go through the updater ---
-            useGameStore.setState(prev => {
-                const gs = prev.gameState;
+            // All other lobby events
+            useMultiplayerStore.setState(prev => {
+                const gs = prev.state;
+
+                // Prevent lobby overwriting game state
+                if (window.location.pathname.includes("game")) {
+                    if (
+                        event.type !== "player-join" &&
+                        event.type !== "player-leave" &&
+                        event.type !== "player-ready" &&
+                        event.type !== "lobby-sync"
+                    ) {
+                        return { state: gs };
+                    }
+                }
 
                 switch (event.type) {
                     case "player-join": {
@@ -97,15 +140,12 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                 ? event.player.id
                                 : gs.hostId ?? null;
 
-                        const isHostMe = userId === event.player.id && event.isHost;
-                        const isGuestJoining = !event.isHost;
-
-                        if (isHostMe && isGuestJoining) {
+                        if (isHost && !event.isHost) {
                             shouldHostSyncRef.current = true;
                         }
 
                         return {
-                            gameState: {
+                            state: {
                                 ...gs,
                                 players: nextPlayers,
                                 hostId: nextHostId,
@@ -124,7 +164,7 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                 : gs.hostId;
 
                         return {
-                            gameState: {
+                            state: {
                                 ...gs,
                                 players: [...remaining],
                                 hostId: nextHost,
@@ -133,63 +173,124 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                     }
 
                     case "player-ready": {
+                        const updatedPlayers = gs.players.map(p => {
+                            if (p.id.startsWith("cpu-")) {
+                                return { ...p, ready: true }; // CPUs always ready
+                            }
+                            if (p.id === event.playerId) {
+                                return { ...p, ready: event.ready };
+                            }
+                            return p;
+                        });
+
                         return {
-                            gameState: {
+                            state: {
                                 ...gs,
-                                players: gs.players.map(p =>
-                                    p.id === event.playerId
-                                        ? { ...p, ready: event.ready }
-                                        : p
-                                ),
+                                players: updatedPlayers,
                             },
                         };
                     }
 
                     case "settings-update": {
-                        setTheme(event.theme);
+                        setTheme(event.theme as ThemeName);
 
                         return {
-                            gameState: {
+                            state: {
                                 ...gs,
                                 cpuCount: event.cpuCount,
-                                cpuDifficulty: event.cpuDifficulty,
+                                cpuDifficulty:
+                                    event.cpuDifficulty as MultiplayerState["cpuDifficulty"],
                                 turnTimer: event.turnTimer,
                             },
                         };
                     }
 
                     case "lobby-sync": {
-                        if (JSON.stringify(gs) === JSON.stringify(event.state)) {
-                            return { gameState: gs };
+                        if (gs.phase === "playing") {
+                            return { state: gs };
                         }
 
+                        const normalizedPlayers = event.state.players.map(p => ({
+                            ...p,
+                            ready: p.id.startsWith("cpu-") ? true : p.ready,
+                        }));
+
                         return {
-                            gameState: { ...event.state },
+                            state: {
+                                ...event.state,
+                                players: normalizedPlayers,
+                            },
                         };
                     }
 
                     default:
-                        return { gameState: gs };
+                        return { state: gs };
                 }
             });
         },
-        [setTheme, userId, onNavigate]
+        [setTheme, onNavigate, isHost]
     );
 
-    // ---------- Realtime channel ----------
-    const channelId = lobbyId;
+    // ---------- Realtime channel (NOW we can safely get send) ----------
     const { send, ready } = useLobbyChannel(channelId, onLobbyEvent);
 
-    console.log("CHANNEL ID", channelId);
+    // ---------- Host match start helper implementation (depends on send) ----------
+    useEffect(() => {
+        hostStartMatchRef.current = () => {
+            const store = useMultiplayerStore.getState();
+            const lobbyState = store.state;
 
-    // ---------- Host lobby sync (authoritative snapshot when a guest joins) ----------
+            const humanPlayers = lobbyState.players;
+
+            const cpuPlayers = Array.from({ length: lobbyState.cpuCount }).map((_, i) => ({
+                id: `cpu-${i + 1}`,
+                username: `CPU ${i + 1}`,
+                avatarUrl: null,
+                ready: true,
+            }));
+
+            const finalPlayers = [
+                ...humanPlayers.filter(p => p.id === lobbyState.hostId),
+                ...humanPlayers.filter(p => p.id !== lobbyState.hostId),
+                ...cpuPlayers,
+            ];
+
+            const seed = crypto.randomUUID();
+
+            // IMPORTANT: do NOT use old engine state here
+            store.hostInitializeGame(
+                lobbyState.cpuCount,
+                lobbyState.cpuDifficulty,
+                finalPlayers,
+                seed
+            );
+
+            const eventsRef = ref(db, `lobbies/${lobbyState.lobbyId}/events`);
+            set(eventsRef, null).then(() => {
+                send({
+                    type: "game-init-lite",
+                    payload: {
+                        players: finalPlayers,
+                        cpuCount: lobbyState.cpuCount,
+                        cpuDifficulty: lobbyState.cpuDifficulty,
+                        turnTimer: lobbyState.turnTimer,
+                        seed,
+                    },
+                });
+
+                onNavigate("game");
+            });
+        };
+    }, [send, onNavigate]);
+
+    // ---------- Host lobby sync ----------
     useEffect(() => {
         if (!isHost) return;
         if (!ready) return;
         if (!lobbyId) return;
         if (!shouldHostSyncRef.current) return;
 
-        const state = useGameStore.getState().gameState;
+        const state = useMultiplayerStore.getState().state;
 
         send({
             type: "lobby-sync",
@@ -202,8 +303,8 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
     // ---------- Host / settings helpers ----------
     function updateSettings(
         newCpuCount: number,
-        newDifficulty: "easy" | "normal" | "hard",
-        newTheme: "vegas" | "atlantic" | "highroller" | "homegame",
+        newDifficulty: MultiplayerState["cpuDifficulty"],
+        newTheme: ThemeName,
         newTurnTimer: number | null = null
     ) {
         if (!isHost) return;
@@ -211,9 +312,9 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
         const humanPlayers = players.length;
         if (humanPlayers + newCpuCount > MAX_PLAYERS) return;
 
-        useGameStore.setState(prev => ({
-            gameState: {
-                ...prev.gameState,
+        useMultiplayerStore.setState(prev => ({
+            state: {
+                ...prev.state,
                 cpuCount: newCpuCount,
                 cpuDifficulty: newDifficulty,
                 turnTimer: newTurnTimer,
@@ -258,19 +359,42 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
         if (!isHost) return;
         if (!lobbyId) return;
 
-        const state = useGameStore.getState().gameState;
-        const finalPlayers = state.players;
+        const state = useMultiplayerStore.getState().state;
+        const humanPlayers = state.players;
 
-        hostInitializeGame(cpuCount, cpuDifficulty, finalPlayers);
+        const cpuPlayers = Array.from({ length: cpuCount }).map((_, i) => ({
+            id: `cpu-${i + 1}`,
+            username: `CPU ${i + 1}`,
+            avatarUrl: null,
+            ready: true,
+        }));
+
+        const finalPlayers = [
+            ...humanPlayers.filter(p => p.id === hostId),
+            ...humanPlayers.filter(p => p.id !== hostId),
+            ...cpuPlayers,
+        ];
+
+        const seed = crypto.randomUUID();
+
+        hostInitializeGame(cpuCount, cpuDifficulty, finalPlayers, seed);
 
         const eventsRef = ref(db, `lobbies/${lobbyId}/events`);
         set(eventsRef, null).then(() => {
             send({
-                type: "game-init",
-                state: useGameStore.getState().gameState,
+                type: "game-init-lite",
+                payload: {
+                    players: finalPlayers,
+                    cpuCount,
+                    cpuDifficulty,
+                    turnTimer,
+                    seed,
+                },
             });
 
-            onNavigate("game");
+            setTimeout(() => {
+                onNavigate("game");
+            }, 50);
         });
     }
 
@@ -292,10 +416,8 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
         onNavigate("play");
     }
 
-    // ---------- Join effect (everyone) ----------
+    // ---------- Join effect ----------
     useEffect(() => {
-        console.log("LOBBY ID AT JOIN", lobbyId);
-
         if (!ready) return;
         if (!lobbyId) return;
         if (!user?.userId) return;

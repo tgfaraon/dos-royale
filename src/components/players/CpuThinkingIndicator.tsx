@@ -1,7 +1,7 @@
-import { useGameStore } from "../../stores/gameStore";
+import { useSingleplayerStore } from "../../stores/singleplayerGameStore";
 
 export function CpuThinkingIndicator() {
-    const gameState = useGameStore(s => s.gameState);
+    const gameState = useSingleplayerStore(s => s.state);
     const { currentPlayerIndex, players } = gameState;
 
     const current = players[currentPlayerIndex];

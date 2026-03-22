@@ -1,5 +1,5 @@
 import type { Screen } from "../../types/Screen";
-import { useGameStore } from "../../stores/gameStore";
+import { useMultiplayerStore } from "../../stores/multiplayerGameStore";
 import { useUserStore } from "../../stores/userStore";
 
 interface PlayMenuProps {
@@ -100,10 +100,11 @@ export function PlayMenu({ onNavigate, setMode }: PlayMenuProps) {
                         const username = useUserStore.getState().username ?? "";
                         const avatarUrl = useUserStore.getState().avatarUrl;
 
-                        // Set everything synchronously BEFORE navigating
-                        useGameStore.getState().setLobbyId(newLobbyId);
-                        useGameStore.getState().setHostId(userId);
-                        useGameStore.getState().setPlayers([
+                        // Use MULTIPLAYER store
+                        const mp = useMultiplayerStore.getState();
+                        mp.setLobbyId(newLobbyId);
+                        mp.setHostId(userId);
+                        mp.setPlayers([
                             {
                                 id: userId,
                                 username,
@@ -118,7 +119,6 @@ export function PlayMenu({ onNavigate, setMode }: PlayMenuProps) {
                 >
                     Private Match
                 </button>
-
 
                 <button className="menu-btn"
                     onClick={() => {

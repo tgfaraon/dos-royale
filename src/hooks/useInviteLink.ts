@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useUserStore } from "../stores/userStore";
-import { useGameStore } from "../stores/gameStore";
+import { useMultiplayerStore } from "../stores/multiplayerGameStore";
 import type { Screen } from "../types/Screen";
 
 export function useInviteLink(navigate: (screen: Screen) => void) {
@@ -8,18 +8,12 @@ export function useInviteLink(navigate: (screen: Screen) => void) {
         const params = new URLSearchParams(window.location.search);
         const lobby = params.get("lobby");
 
-        const lobbyId = useGameStore.getState().gameState.lobbyId;
-
         if (!lobby) return;
 
-        // Store lobbyId immediately
-        useGameStore.setState(state => ({
-            gameState: {
-                ...state.gameState,
-                lobbyId
-            }
-        }));
+        // Store lobbyId in MULTIPLAYER store
+        useMultiplayerStore.getState().setLobbyId(lobby);
 
+        // Clean URL
         window.history.replaceState({}, "", window.location.pathname);
 
         let prevUserId = useUserStore.getState().userId;
@@ -28,6 +22,7 @@ export function useInviteLink(navigate: (screen: Screen) => void) {
             const userId = state.userId;
             const isGuest = state.provider === "guest";
 
+            // User logged in or changed
             if (userId && userId !== prevUserId) {
                 if (isGuest) {
                     navigate("login");
