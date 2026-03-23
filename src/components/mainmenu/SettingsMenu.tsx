@@ -1,4 +1,3 @@
-import React from "react";
 import { useThemeStore } from "../../stores/themeStore";
 import { useAudioStore } from "../../stores/audioStore";
 import { useSingleplayerStore } from "../../stores/singleplayerGameStore";
