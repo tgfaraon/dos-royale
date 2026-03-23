@@ -1,9 +1,9 @@
 import React from "react";
-import { useGameStore } from "../../stores/singleplayerGameStore";
+import { useSingleplayerStore } from "../../stores/singleplayerGameStore";
 
 export function CpuSelector() {
-    const cpuCount = useGameStore((s) => s.cpuCount);
-    const setCpuCount = useGameStore((s) => s.setCpuCount);
+    const cpuCount = useSingleplayerStore((s) => s.cpuCount);
+    const setCpuCount = useSingleplayerStore((s) => s.setCpuCount);
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCount = Number(e.target.value);

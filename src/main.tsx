@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { ref, get } from "firebase/database";
-import "./lib/firebase";
+import { db } from "./lib/firebase";
 
 import { useUserStore } from "./stores/userStore.ts";
 import { useSingleplayerStore } from "./stores/singleplayerGameStore";
