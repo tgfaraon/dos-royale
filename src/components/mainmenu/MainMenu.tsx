@@ -34,14 +34,14 @@ export function MainMenu({
             {/* Content */}
             <div
                 className="
-        relative z-10 flex flex-col items-center
+                    relative z-10 flex flex-col items-center
 
-        /* Mobile: place title right under UserBar */
-        mt-8
+                    /* Mobile: place title right under UserBar */
+                     mt-8
 
-        /* Desktop: restore original dramatic spacing */
-        sm:mt-[-120px] lg:mt-[-180px]
-    "
+                    /* Desktop: restore original dramatic spacing */
+                    sm:mt-[-120px] lg:mt-[-180px]
+                "
             >
                 <h1
                     className=" 
