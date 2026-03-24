@@ -10,7 +10,8 @@ export function MainMenu({
         <div
             className="
         w-full min-h-screen
-        flex flex-col items-center justify-center
+        flex flex-col items-center justify-start pt-24
+        sm:justify-center sm:pt-0
         text-[var(--theme-text)]
         relative 
         overflow-hidden
@@ -37,7 +38,7 @@ export function MainMenu({
                     relative z-10 flex flex-col items-center
 
                     /* Mobile: place title right under UserBar */
-                     mt-8
+                     mt-2
 
                     /* Desktop: restore original dramatic spacing */
                     sm:mt-[-120px] lg:mt-[-180px]
