@@ -440,7 +440,13 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
     // ---------- UI ---------- 
     return (
         <div
-            className="relative flex flex-col items-center justify-center w-full h-screen text-[var(--theme-text)] overflow-hidden"
+            className="
+                relative flex flex-col items-center 
+                justify-start pt-24
+                w-full min-h-screen
+                text-[var(--theme-text)] overflow-hidden
+                sm:justify-center sm:pt-0
+            "
             style={{
                 background: ` 
                     radial-gradient(
@@ -484,27 +490,34 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
             />
 
             {/* Header */}
-            <div className="relative mb-8">
+            <div className="relative mb-6 sm:mb-8">
                 <div className="absolute inset-0 blur-[30px] opacity-20 bg-[var(--theme-accent)]"></div>
-                <h2 className="relative text-4xl font-extrabold tracking-widest text-[var(--theme-accent)] drop-shadow-[0_0_10px_rgba(0,0,0,0.6)]">
+                <h2 className="relative text-3xl sm:text-4xl font-extrabold tracking-widest text-[var(--theme-accent)] drop-shadow-[0_0_10px_rgba(0,0,0,0.6)]">
                     PRIVATE MATCH
                 </h2>
             </div>
 
-            {/* Floating Card */}
+            {/* Scrollable Floating Card */}
             <div
-                className=" 
-                    relative z-10 flex flex-col items-center gap-6
+                className="
+                    relative z-10 w-full max-w-[480px]
+                    overflow-y-auto
+                    max-h-[calc(100vh-160px)]
+                    sm:max-h-none
+    
+                    flex flex-col items-center gap-4 sm:gap-6
                     bg-[var(--theme-surface)]/40 backdrop-blur-md border
                     border-[var(--theme-accent)]/40
-                    rounded-xl px-8 py-6 shadow-[0_0_20px_rgba(0,0,0,0.4)]
+                    rounded-xl px-6 sm:px-8 py-5 sm:py-6
+                    shadow-[0_0_20px_rgba(0,0,0,0.4)]
                 "
             >
-                {/* Player List */}
-                <div className="w-full mb-4 text-center">
-                    <h3 className="mb-2 text-lg font-semibold">Players</h3>
 
-                    <div className="flex flex-col gap-2 mb-4">
+                {/* Player List */}
+                <div className="w-full mb-2 text-center">
+                    <h3 className="mb-2 text-base font-semibold sm:text-lg">Players</h3>
+
+                    <div className="flex flex-col gap-2 mb-3">
                         {players.map(p => (
                             <div
                                 key={p.id}
@@ -534,10 +547,10 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                     <button
                                         onClick={() => toggleReady(!p.ready)}
                                         className="
-                                        px-3 py-1 rounded-lg
-                                        bg-[var(--theme-accent)] text-black font-semibold
-                                        hover:opacity-90 transition-all
-                                    "
+                                            px-3 py-1 rounded-lg text-sm sm:text-base
+                                            bg-[var(--theme-accent)] text-black font-semibold
+                                            hover:opacity-90 transition-all
+                                        "
                                     >
                                         {p.ready ? "Unready" : "Ready"}
                                     </button>
@@ -557,12 +570,13 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                     {/* Invite Link Button */}
                     <button
                         onClick={copyInviteLink}
-                        className=" 
-                            w-full px-4 py-2 mb-4 rounded-lg
-                             bg-[var(--theme-accent)] text-black font-semibold border
-                             border-[var(--theme-accent)]
-                             shadow-[0_0_10px_var(--theme-accent)]
-                             hover:opacity-90 transition-all
+                        className="
+                            w-full px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base
+                            mb-3 rounded-lg
+                            bg-[var(--theme-accent)] text-black font-semibold border
+                            border-[var(--theme-accent)]
+                            shadow-[0_0_10px_var(--theme-accent)]
+                            hover:opacity-90 transition-all
                         "
                     >
                         {copied ? "Copied!" : "Copy Invite Link"}
@@ -571,12 +585,10 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
 
                 {/* CPU Count */}
                 {isHost && (
-                    <div className="flex flex-col gap-3 mt-2">
-                        <h3 className="text-lg font-semibold text-[var(--theme-text)]">
-                            CPU Count
-                        </h3>
+                    <div className="flex flex-col w-full gap-2 mt-1 sm:gap-3 sm:mt-2">
+                        <h3 className="text-base font-semibold sm:text-lg">CPU Count</h3>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
                             {[0, 1, 2, 3].map(count => (
                                 <button
                                     key={count}
@@ -584,21 +596,20 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                         updateSettings(
                                             count,
                                             cpuDifficulty,
-                                            theme as "vegas" | "atlantic" | "highroller" | "homegame"
+                                            theme
                                         )
                                     }
-                                    className={` 
-                                        px-5 py-2 rounded-lg border-[2px] font-semibold tracking-wide
+                                    className={`
+                                        px-4 py-2 text-sm sm:px-5 sm:py-2 sm:text-base
+                                        rounded-lg border-[2px] font-semibold tracking-wide
                                         transition-all duration-200
                                         ${cpuCount === count
                                             ? "bg-[var(--theme-accent)] text-black border-[var(--theme-accent)] shadow-[0_0_10px_var(--theme-accent)]"
                                             : "bg-[var(--theme-surface)] text-[var(--theme-text)] border-[var(--theme-accent)] opacity-70 hover:opacity-100"
-                                        } 
+                                        }
                                     `}
                                 >
-                                    {count === 0
-                                        ? "Friends Only"
-                                        : `${count} CPU${count > 1 ? "s" : ""}`}
+                                    {count === 0 ? "Friends Only" : `${count} CPU${count > 1 ? "s" : ""}`}
                                 </button>
                             ))}
                         </div>
@@ -607,32 +618,25 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
 
                 {/* CPU Difficulty */}
                 {isHost && cpuCount > 0 && (
-                    <div className="flex flex-col gap-3 mt-2">
-                        <h3 className="text-lg font-semibold text-[var(--theme-text)]">
-                            CPU Difficulty
-                        </h3>
+                    <div className="flex flex-col w-full gap-2 mt-1 sm:gap-3 sm:mt-2">
+                        <h3 className="text-base font-semibold sm:text-lg">CPU Difficulty</h3>
 
-                        <div className="flex gap-3">
-                            {(["easy", "normal", "hard"] as Array<
-                                "easy" | "normal" | "hard"
-                            >).map(level => (
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                            {(["easy", "normal", "hard"] as const).map(level => (
                                 <button
                                     key={level}
                                     onClick={() =>
-                                        updateSettings(
-                                            cpuCount,
-                                            level,
-                                            theme
-                                        )
+                                        updateSettings(cpuCount, level, theme)
                                     }
-                                    className={` 
-                                            px-5 py-2 rounded-lg border-[2px] font-semibold tracking-wide
-                                            transition-all duration-200
-                                            ${cpuDifficulty === level
+                                    className={`
+                                        px-4 py-2 text-sm sm:px-5 sm:py-2 sm:text-base
+                                        rounded-lg border-[2px] font-semibold tracking-wide
+                                        transition-all duration-200
+                                        ${cpuDifficulty === level
                                             ? "bg-[var(--theme-accent)] text-black border-[var(--theme-accent)] shadow-[0_0_10px_var(--theme-accent)]"
                                             : "bg-[var(--theme-surface)] text-[var(--theme-text)] border-[var(--theme-accent)] opacity-70 hover:opacity-100"
-                                        } 
-                                        `}
+                                        }
+                                    `}
                                 >
                                     {level.charAt(0).toUpperCase() + level.slice(1)}
                                 </button>
@@ -643,12 +647,10 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
 
                 {/* Turn Timer */}
                 {isHost && (
-                    <div className="flex flex-col gap-3 mt-2">
-                        <h3 className="text-lg font-semibold text-[var(--theme-text)]">
-                            Turn Timer
-                        </h3>
+                    <div className="flex flex-col w-full gap-2 mt-1 sm:gap-3 sm:mt-2">
+                        <h3 className="text-base font-semibold sm:text-lg">Turn Timer</h3>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
                             {[
                                 { label: "Off", value: null },
                                 { label: "30s", value: 30 },
@@ -658,20 +660,16 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                 <button
                                     key={option.label}
                                     onClick={() =>
-                                        updateSettings(
-                                            cpuCount,
-                                            cpuDifficulty,
-                                            theme as "vegas" | "atlantic" | "highroller" | "homegame",
-                                            option.value
-                                        )
+                                        updateSettings(cpuCount, cpuDifficulty, theme, option.value)
                                     }
-                                    className={` 
-                                        px-5 py-2 rounded-lg border-[2px] font-semibold tracking-wide
+                                    className={`
+                                        px-4 py-2 text-sm sm:px-5 sm:py-2 sm:text-base
+                                        rounded-lg border-[2px] font-semibold tracking-wide
                                         transition-all duration-200
                                         ${turnTimer === option.value
                                             ? "bg-[var(--theme-accent)] text-black border-[var(--theme-accent)] shadow-[0_0_10px_var(--theme-accent)]"
                                             : "bg-[var(--theme-surface)] text-[var(--theme-text)] border-[var(--theme-accent)] opacity-70 hover:opacity-100"
-                                        } 
+                                        }
                                     `}
                                 >
                                     {option.label}
@@ -682,29 +680,24 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                 )}
 
                 {/* Theme Selector */}
-                <div className="flex flex-col gap-3 mt-2">
-                    <h3 className="text-lg font-semibold text-[var(--theme-text)]">
-                        Theme
-                    </h3>
+                <div className="flex flex-col w-full gap-2 mt-1 sm:gap-3 sm:mt-2">
+                    <h3 className="text-base font-semibold sm:text-lg">Theme</h3>
 
-                    <div className="flex gap-3">
-                        {(
-                            ["vegas", "atlantic", "highroller", "homegame"] as Array<
-                                "vegas" | "atlantic" | "highroller" | "homegame"
-                            >
-                        ).map(t => (
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
+                        {(["vegas", "atlantic", "highroller", "homegame"] as const).map(t => (
                             <button
                                 key={t}
                                 disabled={!isHost}
                                 onClick={() => updateSettings(cpuCount, cpuDifficulty, t)}
-                                className={` 
-                                    px-5 py-2 rounded-lg border-[2px] font-semibold tracking-wide
+                                className={`
+                                    px-4 py-2 text-sm sm:px-5 sm:py-2 sm:text-base
+                                    rounded-lg border-[2px] font-semibold tracking-wide
                                     transition-all duration-200
                                     ${theme === t
                                         ? "bg-[var(--theme-accent)] text-black border-[var(--theme-accent)] shadow-[0_0_10px_var(--theme-accent)]"
                                         : "bg-[var(--theme-surface)] text-[var(--theme-text)] border-[var(--theme-accent)] opacity-70 hover:opacity-100"
-                                    } 
-                                    ${!isHost ? "cursor-not-allowed opacity-40" : ""} 
+                                    }
+                                    ${!isHost ? "cursor-not-allowed opacity-40" : ""}
                                 `}
                             >
                                 {t === "vegas" && "Modern Vegas"}
@@ -721,18 +714,20 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                     <button
                         onClick={startMatch}
                         disabled={!canStart}
-                        className={` 
-                            w-full px-4 py-2 mt-2 rounded-lg font-bold transition-all
+                        className={`
+                            w-full px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base
+                            mt-2 rounded-lg font-bold transition-all
                             ${allReady
                                 ? "bg-[var(--theme-accent)] text-black shadow-[0_0_15px_var(--theme-accent)] animate-pulse"
                                 : "bg-gray-600 text-gray-300 cursor-not-allowed opacity-60"
-                            } 
+                            }
                         `}
                     >
                         Start Match
                     </button>
                 )}
 
+                {/* Leave Confirmation */}
                 {showLeaveConfirm && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                         <div className="bg-[var(--theme-surface)] p-6 rounded-lg shadow-lg text-center border border-[var(--theme-accent)]/40">
@@ -751,7 +746,8 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
                                 <button
                                     onClick={() => setShowLeaveConfirm(false)}
                                     className="px-4 py-2 font-semibold bg-gray-300 rounded-lg"
-                                > Stay
+                                >
+                                    Stay
                                 </button>
                             </div>
                         </div>
@@ -760,7 +756,7 @@ export default function PrivateMatchLobby({ onNavigate }: PrivateMatchLobbyProps
 
                 {/* Back */}
                 <button
-                    className="w-48 menu-btn opacity-70 hover:opacity-100"
+                    className="w-40 mt-2 sm:w-48 menu-btn opacity-70 hover:opacity-100"
                     onClick={() => setShowLeaveConfirm(true)}
                 >
                     ← Back
