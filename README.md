@@ -230,6 +230,9 @@ The application will be available at:
 #### Code
 http://localhost:5173
 
+#### Live:
+https://dos-royale.vercel.app/
+
 ---
 
 ## Author
