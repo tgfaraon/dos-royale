@@ -29,7 +29,7 @@ export function MenuScene() {
                 className="
                     absolute left-1/2 -translate-x-1/2
                     bottom-[-10px]
-                    w-[420px] h-[200px] opacity-100
+                    w-[520px] h-[260px] opacity-100
 
                     sm:w-[650px] sm:h-[320px] sm:bottom-[-1px]
                 "
@@ -45,8 +45,8 @@ export function MenuScene() {
             <div
                 className="
                     absolute
-                    bottom-[260px] left-[-10px]
-                    w-[120px] h-[120px] opacity-85 rotate-[-5deg]
+                    bottom-[300px] left-[-10px]
+                    w-[150px] h-[150px] opacity-85 rotate-[-5deg]
 
                     sm:bottom-[465px] sm:left-[-5px]
                     sm:w-[190px] sm:h-[190px]
@@ -62,8 +62,8 @@ export function MenuScene() {
             <div
                 className="
                     absolute
-                    bottom-[220px] right-[-10px]
-                    w-[120px] h-[120px] opacity-100 rotate-[5deg]
+                    bottom-[260px] right-[-10px]
+                    w-[150px] h-[150px] opacity-100 rotate-[5deg]
 
                     sm:bottom-[400px] sm:right-0
                     sm:w-[190px] sm:h-[190px]
