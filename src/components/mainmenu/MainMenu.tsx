@@ -8,14 +8,15 @@ export function MainMenu({
 }) {
     return (
         <div
-            className=" 
-                w-full h-screen
-                flex flex-col items-center justify-center
-                text-[var(--theme-text)]
-                relative 
-                overflow-hidden
-                animate-fadeIn
-            "
+            className="
+        w-full min-h-screen
+        flex flex-col items-center justify-center
+        text-[var(--theme-text)]
+        relative 
+        overflow-hidden
+        animate-fadeIn
+        sm:h-screen
+    "
             style={{
                 background: ` 
                     radial-gradient( 
@@ -31,10 +32,10 @@ export function MainMenu({
             <div className="absolute inset-0 opacity-10 bg-[url('/felt.png')] bg-cover pointer-events-none"></div>
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center mt-[-200px]">
+            <div className="relative z-10 flex flex-col items-center mt-[-120px] sm:mt-[-200px]">
                 <h1
                     className=" 
-                        text-5xl font-extrabold tracking-widest mb-12
+                        text-4xl sm:text-5xl font-extrabold tracking-widest mb-12
                         text-[var(--theme-accent)]
                         drop-shadow-[0_0_12px_rgba(0,0,0,0.6)]
                     "
@@ -42,7 +43,7 @@ export function MainMenu({
                     DOS <span className="text-[var(--theme-accent)]">♦</span> ROYALE
                 </h1>
 
-                <div className="flex flex-col w-64 gap-4">
+                <div className="flex flex-col w-56 gap-3 sm:w-64 sm:gap-4">
                     <button className="menu-btn" onClick={() => onNavigate("play")}>
                         Play
                     </button>
