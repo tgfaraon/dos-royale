@@ -32,7 +32,17 @@ export function MainMenu({
             <div className="absolute inset-0 opacity-10 bg-[url('/felt.png')] bg-cover pointer-events-none"></div>
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center mt-[-120px] sm:mt-[-200px]">
+            <div
+                className="
+        relative z-10 flex flex-col items-center
+
+        /* Mobile: place title right under UserBar */
+        mt-8
+
+        /* Desktop: restore original dramatic spacing */
+        sm:mt-[-120px] lg:mt-[-180px]
+    "
+            >
                 <h1
                     className=" 
                         text-4xl sm:text-5xl font-extrabold tracking-widest mb-12
